@@ -12,8 +12,7 @@ exports.params = {
     defaultAttrs: true,
     uselessOverrides: true,
     keepDataAttrs: true,
-    keepAriaAttrs: true,
-    keepRoleAttr: false
+    keepAriaAttrs: true
 };
 
 var collections = require('./_collections'),
@@ -21,8 +20,7 @@ var collections = require('./_collections'),
     attrsGroups = collections.attrsGroups,
     elemsGroups = collections.elemsGroups,
     attrsGroupsDefaults = collections.attrsGroupsDefaults,
-    attrsInheritable = collections.inheritableAttrs,
-    applyGroups = collections.presentationNonInheritableGroupAttrs;
+    attrsInheritable = collections.inheritableAttrs;
 
 // collect and extend all references
 for (var elem in elems) {
@@ -109,8 +107,7 @@ exports.fn = function(item, params) {
                     attr.name !== 'xmlns' &&
                     (attr.prefix === 'xml' || !attr.prefix) &&
                     (!params.keepDataAttrs || attr.name.indexOf('data-') != 0) &&
-                    (!params.keepAriaAttrs || attr.name.indexOf('aria-') != 0) &&
-                    (!params.keepRoleAttr || attr.name != 'role')
+                    (!params.keepAriaAttrs || attr.name.indexOf('aria-') != 0)
                 ) {
                     if (
                         // unknown attrs
@@ -121,7 +118,6 @@ exports.fn = function(item, params) {
                         // attrs with default values
                         (
                             params.defaultAttrs &&
-                            !item.hasAttr('id') &&
                             elems[elem].defaults &&
                             elems[elem].defaults[attr.name] === attr.value && (
                                 attrsInheritable.indexOf(attr.name) < 0 ||
@@ -131,8 +127,7 @@ exports.fn = function(item, params) {
                         // useless overrides
                         (
                             params.uselessOverrides &&
-                            !item.hasAttr('id') &&
-                            applyGroups.indexOf(attr.name) < 0 &&
+                            attr.name !== 'transform' &&
                             attrsInheritable.indexOf(attr.name) > -1 &&
                             item.parentNode.computedAttr(attr.name, attr.value)
                         )

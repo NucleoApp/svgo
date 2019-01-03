@@ -34,7 +34,7 @@ var FS = require('fs'),
         },{
           removeViewBox: false,
         },{
-          cleanupEnableBackground: true,
+          cleanUpEnableBackground: true,
         },{
           convertStyleToAttrs: true,
         },{
@@ -69,6 +69,8 @@ var FS = require('fs'),
           convertShapeToPath: true,
         },{
           sortAttrs: true,
+        },{
+          transformsWithOnePath: false,
         },{
           removeDimensions: true,
         },{

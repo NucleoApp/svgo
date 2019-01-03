@@ -3,7 +3,6 @@ examples
 test
 lib-cov
 .editorconfig
-.gitignore
 .jshintignore
 .jshintrc
 .travis.yml

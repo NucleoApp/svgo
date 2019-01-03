@@ -61,17 +61,8 @@ var prefixId = function(val) {
 
 // attr.value helper methods
 
-// prefixes a class attribute value
-var addPrefixToClassAttr = function(attr) {
-    if (!attrNotEmpty(attr)) {
-        return;
-    }
-
-    attr.value = attr.value.split(/\s+/).map(addPrefix).join(' ');
-};
-
-// prefixes an ID attribute value
-var addPrefixToIdAttr = function(attr) {
+// prefixes a normal attribute value
+var addPrefixToAttr = function(attr) {
     if (!attrNotEmpty(attr)) {
         return;
     }
@@ -79,8 +70,8 @@ var addPrefixToIdAttr = function(attr) {
     attr.value = addPrefix(attr.value);
 };
 
-// prefixes a href attribute value
-var addPrefixToHrefAttr = function(attr) {
+// prefixes an ID attribute value
+var addPrefixToIdAttr = function(attr) {
     if (!attrNotEmpty(attr)) {
         return;
     }
@@ -132,8 +123,6 @@ exports.fn = function(node, opts, extra) {
         } else {
             prefix = opts.prefix;
         }
-    } else if (opts.prefix === false) {
-        prefix = false;
     } else if (extra && extra.path && extra.path.length > 0) {
         var filename = path.basename(extra.path);
         prefix = filename;
@@ -142,9 +131,6 @@ exports.fn = function(node, opts, extra) {
 
     // prefixes a normal value
     addPrefix = function(name) {
-        if(prefix === false){
-            return escapeIdentifierName(name);
-        }
         return escapeIdentifierName(prefix + opts.delim + name);
     };
 
@@ -194,7 +180,7 @@ exports.fn = function(node, opts, extra) {
         });
 
         // update <style>s
-        node.content[0].text = csstree.generate(cssAst);
+        node.content[0].text = csstree.translate(cssAst);
         return node;
     }
 
@@ -206,16 +192,14 @@ exports.fn = function(node, opts, extra) {
     }
 
     // ID
-    addPrefixToIdAttr(node.attrs.id);
-
+    addPrefixToAttr(node.attrs.id);
     // Class
-    addPrefixToClassAttr(node.attrs.class);
+    addPrefixToAttr(node.attrs.class);
 
     // href
-    addPrefixToHrefAttr(node.attrs.href);
-
+    addPrefixToIdAttr(node.attrs.href);
     // (xlink:)href (deprecated, must be still supported)
-    addPrefixToHrefAttr(node.attrs['xlink:href']);
+    addPrefixToIdAttr(node.attrs['xlink:href']);
 
     // referenceable properties
     for (var referencesProp of referencesProps) {

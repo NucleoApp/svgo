@@ -37,8 +37,4 @@ describe('svgo object', function() {
         item.should.be.empty;
     });
 
-    it('should have ES module interop default property', function() {
-        SVGO.should.equal(SVGO.default);
-    });
-
 });
