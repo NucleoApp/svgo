@@ -7,7 +7,8 @@ exports.active = true;
 exports.description = 'converts basic shapes to more compact path form';
 
 exports.params = {
-    convertArcs: false
+    convertArcs: false,
+    convertRoundRect: false
 };
 
 var none = { value: 0 },
@@ -28,6 +29,7 @@ var none = { value: 0 },
  */
 exports.fn = function(item, params) {
     var convertArcs = params && params.convertArcs;
+    var convertRoundRect = params && params.convertRoundRect;
 
     if (
         item.isElem('rect') &&
@@ -63,6 +65,45 @@ exports.fn = function(item, params) {
 
         item.renameElem('path')
             .removeAttr(['x', 'y', 'width', 'height']);
+    
+    } else if (
+        item.isElem('rect') &&
+        item.hasAttr('width') &&
+        item.hasAttr('height') &&
+        convertRoundRect
+    ) {
+        var x = +(item.attr('x') || none).value,
+            y = +(item.attr('y') || none).value,
+            width  = +item.attr('width').value,
+            height = +item.attr('height').value,
+            arcWidth = +(item.attr('rx') || none).value,
+            arcHeight = +(item.attr('ry') || none).value,
+            r = +(x + width),
+            b = +(y + height);
+
+        if (isNaN(x - y + width - height)) return;
+
+        var pathData =
+            'M' + (x + arcWidth) + ' ' + y +
+            'L' + (r - arcWidth) + ' ' + y +
+            'Q' + r + ' ' + y + ' ' + r + ' ' + (y + arcHeight) + 
+            'L' + r + ' ' + (y + height - arcHeight) +
+            'Q' + r + ' ' + b + ' ' + (r - arcWidth) + ' ' + b +
+            'L' + (x + arcWidth) + ' ' + b +
+            'Q' + x + ' ' + b + ' ' + x + ' ' + (b - arcHeight) +
+            'L' + x + ' ' + (y + arcHeight) +
+            'Q' + x + ' ' + y + ' ' + (x + arcWidth) + ' ' + y +
+            'z';
+
+        item.addAttr({
+                name: 'd',
+                value: pathData,
+                prefix: '',
+                local: 'd'
+            });
+
+        item.renameElem('path')
+            .removeAttr(['x', 'y', 'width', 'height', 'rx', 'ry']);
 
     } else if (item.isElem('line')) {
 
