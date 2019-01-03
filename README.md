@@ -19,14 +19,14 @@ SVGO has a plugin-based architecture, so almost every optimization is a separate
 Today we have:
 
 | Plugin | Description |
-| ------ | ----------- |
+| ------ | ----------- | 
 | [cleanupAttrs](https://github.com/svg/svgo/blob/master/plugins/cleanupAttrs.js) | cleanup attributes from newlines, trailing, and repeating spaces |
 | [removeDoctype](https://github.com/svg/svgo/blob/master/plugins/removeDoctype.js) | remove doctype declaration |
 | [removeXMLProcInst](https://github.com/svg/svgo/blob/master/plugins/removeXMLProcInst.js) | remove XML processing instructions |
 | [removeComments](https://github.com/svg/svgo/blob/master/plugins/removeComments.js) | remove comments |
 | [removeMetadata](https://github.com/svg/svgo/blob/master/plugins/removeMetadata.js) | remove `<metadata>` |
-| [removeTitle](https://github.com/svg/svgo/blob/master/plugins/removeTitle.js) | remove `<title>` |
-| [removeDesc](https://github.com/svg/svgo/blob/master/plugins/removeDesc.js) | remove `<desc>` |
+| [removeTitle](https://github.com/svg/svgo/blob/master/plugins/removeTitle.js) | remove `<title>` (disabled by default) |
+| [removeDesc](https://github.com/svg/svgo/blob/master/plugins/removeDesc.js) | remove `<desc>` (only non-meaningful by default) |
 | [removeUselessDefs](https://github.com/svg/svgo/blob/master/plugins/removeUselessDefs.js) | remove elements of `<defs>` without `id` |
 | [removeXMLNS](https://github.com/svg/svgo/blob/master/plugins/removeXMLNS.js) | removes `xmlns` attribute (for inline svg, disabled by default) |
 | [removeEditorsNSData](https://github.com/svg/svgo/blob/master/plugins/removeEditorsNSData.js) | remove editors namespaces, elements, and attributes |
@@ -34,7 +34,7 @@ Today we have:
 | [removeHiddenElems](https://github.com/svg/svgo/blob/master/plugins/removeHiddenElems.js) | remove hidden elements |
 | [removeEmptyText](https://github.com/svg/svgo/blob/master/plugins/removeEmptyText.js) | remove empty Text elements |
 | [removeEmptyContainers](https://github.com/svg/svgo/blob/master/plugins/removeEmptyContainers.js) | remove empty Container elements |
-| [removeViewBox](https://github.com/svg/svgo/blob/master/plugins/removeViewBox.js) | remove `viewBox` attribute when possible |
+| [removeViewBox](https://github.com/svg/svgo/blob/master/plugins/removeViewBox.js) | remove `viewBox` attribute when possible (disabled by default) |
 | [cleanupEnableBackground](https://github.com/svg/svgo/blob/master/plugins/cleanupEnableBackground.js) | remove or cleanup `enable-background` attribute when possible |
 | [minifyStyles](https://github.com/svg/svgo/blob/master/plugins/minifyStyles.js) | minify `<style>` elements content with [CSSO](https://github.com/css/csso) |
 | [convertStyleToAttrs](https://github.com/svg/svgo/blob/master/plugins/convertStyleToAttrs.js) | convert styles into attributes |
@@ -47,7 +47,7 @@ Today we have:
 | [removeUnusedNS](https://github.com/svg/svgo/blob/master/plugins/removeUnusedNS.js) | remove unused namespaces declaration |
 | [cleanupIDs](https://github.com/svg/svgo/blob/master/plugins/cleanupIDs.js) | remove unused and minify used IDs |
 | [cleanupNumericValues](https://github.com/svg/svgo/blob/master/plugins/cleanupNumericValues.js) | round numeric values to the fixed precision, remove default `px` units |
-| [cleanupListOfValues](https://github.com/svg/svgo/blob/master/plugins/cleanupListOfValues.js) | round numeric values in attributes that take a list of numbers (like `viewBox` or `enable-background`) |
+| [cleanupListOfValues](https://github.com/svg/svgo/blob/master/plugins/cleanupListOfValues.js) | round numeric values in attributes that take a list of numbers (like `viewBox` or `enableBackground`) |
 | [moveElemsAttrsToGroup](https://github.com/svg/svgo/blob/master/plugins/moveElemsAttrsToGroup.js) | move elements' attributes to their enclosing group |
 | [moveGroupAttrsToElems](https://github.com/svg/svgo/blob/master/plugins/moveGroupAttrsToElems.js) | move some group attributes to the contained elements |
 | [collapseGroups](https://github.com/svg/svgo/blob/master/plugins/collapseGroups.js) | collapse useless groups |
@@ -55,7 +55,8 @@ Today we have:
 | [mergePaths](https://github.com/svg/svgo/blob/master/plugins/mergePaths.js) | merge multiple Paths into one |
 | [convertShapeToPath](https://github.com/svg/svgo/blob/master/plugins/convertShapeToPath.js) | convert some basic shapes to `<path>` |
 | [sortAttrs](https://github.com/svg/svgo/blob/master/plugins/sortAttrs.js) | sort element attributes for epic readability (disabled by default) |
-| [removeDimensions](https://github.com/svg/svgo/blob/master/plugins/removeDimensions.js) | remove `width`/`height` attributes if `viewBox` is present (opposite to removeViewBox, disable it first) (disabled by default) |
+| [transformsWithOnePath](https://github.com/svg/svgo/blob/master/plugins/transformsWithOnePath.js) | apply transforms, crop by real width, center vertical alignment, and resize SVG with one Path inside (disabled by default) |
+| [removeDimensions](https://github.com/svg/svgo/blob/master/plugins/removeDimensions.js) | remove `width`/`height` attributes if `viewBox` is present (disabled by default) |
 | [removeAttrs](https://github.com/svg/svgo/blob/master/plugins/removeAttrs.js) | remove attributes by pattern (disabled by default) |
 | [removeElementsByAttr](https://github.com/svg/svgo/blob/master/plugins/removeElementsByAttr.js) | remove arbitrary elements by ID or className (disabled by default) |
 | [addClassesToSVGElement](https://github.com/svg/svgo/blob/master/plugins/addClassesToSVGElement.js) | add classnames to an outer `<svg>` element (disabled by default) |
@@ -71,6 +72,7 @@ Want to know how it works and how to write your own plugin? [Of course you want 
 ```sh
 $ [sudo] npm install -g svgo
 ```
+
 
 ## Usage
 
@@ -89,8 +91,8 @@ Options:
   -o OUTPUT, --output=OUTPUT : Output file or folder (by default the same as the input), "-" for STDOUT
   -p PRECISION, --precision=PRECISION : Set number of digits in the fractional part, overrides plugins params
   --config=CONFIG : Config file or JSON string to extend or replace default
-  --disable=PLUGIN : Disable plugin by name, "--disable={PLUGIN1,PLUGIN2}" for multiple plugins
-  --enable=PLUGIN : Enable plugin by name, "--enable={PLUGIN3,PLUGIN4}" for multiple plugins
+  --disable=DISABLE : Disable plugin by name
+  --enable=ENABLE : Enable plugin by name
   --datauri=DATAURI : Output as Data URI string (base64, URI encoded or unencoded)
   --multipass : Enable multipass
   --pretty : Make SVG pretty printed
@@ -100,6 +102,7 @@ Options:
 
 Arguments:
   INPUT : Alias to --input
+  OUTPUT : Alias to --output
 ```
 
 * with files:
@@ -111,19 +114,7 @@ Arguments:
     or:
 
     ```sh
-    $ svgo *.svg
-    ```
-
-    ```sh
-    $ svgo test.svg -o test.min.svg
-    ```
-
-    ```sh
-    $ svgo test.svg other.svg third.svg
-    ```
-
-    ```sh
-    $ svgo test.svg other.svg third.svg -o test.min.svg -o other.min.svg -o third.min.svg
+    $ svgo test.svg test.min.svg
     ```
 
 * with STDIN / STDOUT:
@@ -142,10 +133,6 @@ Arguments:
 
     ```sh
     $ svgo -f ../path/to/folder/with/svg/files -o ../path/to/folder/with/svg/output
-    ```
-
-    ```sh
-    $ svgo *.svg -o ../path/to/folder/with/svg/output
     ```
 
 * with strings:
@@ -167,7 +154,7 @@ Arguments:
     ```sh
     $ gunzip -c test.svgz | svgo -i - -o test.min.svg
     ```
-
+    
     from `.svg` to `.svgz`:
 
     ```sh
@@ -185,7 +172,6 @@ Arguments:
 * as a webpack loader – [image-webpack-loader](https://github.com/tcoopman/image-webpack-loader)
 * as a Telegram Bot – [svgo_bot](https://github.com/maksugr/svgo_bot)
 * as a PostCSS plugin - [postcss-svgo](https://github.com/ben-eb/postcss-svgo)
-* as an Inkscape plugin - [inkscape-svgo](https://github.com/konsumer/inkscape-svgo)
 
 ## License and Copyright
 
